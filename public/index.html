@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bitrion — Enterprise Network Infrastructure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+/* ============================================================
+   Bitrion — Green/Cyberpunk Theme
+   Shared stylesheet for all pages
+   ============================================================ */
+
+:root {
+  /* Deep dark backgrounds — cool blue-black undertone */
+  --bg:          #080e08;
+  --bg-nav:      #090f09;
+  --bg-panel:    #0b120b;
+  --bg-card:     #0d160d;
+  --bg-row:      #0f190f;
+  --bg-hover:    #111c11;
+
+  /* Matrix/hacker green as dominant accent */
+  --green:       #00ff41;
+  --green-dim:   rgba(0, 255, 65, 0.10);
+  --green-border: rgba(0, 255, 65, 0.22);
+  --green-hi:    rgba(0, 255, 65, 0.38);
+  --green-glow:  rgba(0, 255, 65, 0.18);
+
+  /* Cyan ONLY for positive/live metrics (uptime, online status, chart) */
+  --cyan:        #00e5ff;
+  --cyan-dim:    rgba(0, 229, 255, 0.10);
+
+  /* Darker green for CTAs / secondary actions */
+  --dark-green:  #00b32c;
+
+  /* Text — cool-tinted for cohesion */
+  --text-1:      #c8f0d8;   /* primary */
+  --text-2:      #6a8878;   /* secondary */
+  --text-3:      #2a4a36;   /* tertiary / disabled */
+  --text-hi:     #f0fff5;   /* bright */
+
+  /* Borders */
+  --border:      rgba(0, 180, 60, 0.18);
+  --border-hi:   rgba(0, 255, 65, 0.32);
+
+  /* Grid — very subtle green tint */
+  --grid-line:   rgba(0, 160, 30, 0.05);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text-1);
+  font-family: 'Space Mono', monospace;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(0,255,65,0.25); }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,255,65,0.45); }
+
+/* ── Utility ── */
+.label {
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--text-2);
+  text-transform: uppercase;
+}
+
+/* ── Gradient text ── */
+.grad-green {
+  background: linear-gradient(135deg, #f0fff5 20%, #00ff41 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.grad-amber {
+  background: linear-gradient(135deg, #00e5ff, #66f0ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.grad-lime {
+  background: linear-gradient(135deg, #f0fff5 20%, #d4ff50 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.grad-teal {
+  background: linear-gradient(135deg, #f0fff5 20%, #2dd4bf 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+/* ──────────────────────────────────────────────
+   Scan-line sweep animation (green)
+────────────────────────────────────────────── */
+@keyframes scanline {
+  0%   { transform: translateY(-10px); opacity: 0; }
+  3%   { opacity: 1; }
+  97%  { opacity: 0.6; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+.scan-line {
+  position: fixed;
+  left: 0; right: 0; top: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0, 255, 65, 0.08) 20%,
+    rgba(0, 255, 65, 0.22) 50%,
+    rgba(0, 255, 65, 0.08) 80%,
+    transparent 100%);
+  animation: scanline 14s linear infinite;
+  pointer-events: none;
+  z-index: 9998;
+}
+.scan-line:nth-child(2) { animation-delay: -7s; }
+
+/* ──────────────────────────────────────────────
+   NAV — Two-tier structure
+────────────────────────────────────────────── */
+.nav-strip {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 36px;
+  background: var(--bg-nav);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 28px;
+}
+.nav-strip-pill {
+  background: rgba(0, 255, 65, 0.05);
+  border: 1px solid var(--border);
+  padding: 5px 22px;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--text-1);
+  white-space: nowrap;
+}
+
+nav {
+  position: fixed; top: 36px; left: 0; right: 0; z-index: 199;
+  height: 56px;
+  background: rgba(8, 14, 8, 0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 0 28px; height: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--text-hi); text-decoration: none; letter-spacing: 0.06em;
+}
+.nav-logo span { color: var(--green); }
+
+.nav-links { display: flex; gap: 4px; align-items: center; }
+.nav-item {
+  font-size: 0.76rem; color: var(--text-2);
+  text-decoration: none; padding: 6px 16px;
+  letter-spacing: 0.1em;
+  display: flex; align-items: center; gap: 7px;
+  position: relative;
+  border: 1px solid transparent;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.nav-item::before,
+.nav-item::after {
+  content: '';
+  position: absolute;
+  width: 6px; height: 6px;
+  border-style: solid;
+  border-color: transparent;
+  transition: border-color 0.15s;
+}
+.nav-item::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+.nav-item::after  { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+.nav-item:hover {
+  color: var(--text-hi);
+  background: rgba(0, 255, 65, 0.05);
+  border-color: var(--border);
+}
+.nav-item:hover::before,
+.nav-item:hover::after { border-color: var(--green); }
+.nav-item-icon { font-size: 0.75rem; opacity: 0.7; }
+.nav-item.active {
+  color: var(--text-hi);
+  background: rgba(0, 255, 65, 0.05);
+  border-color: var(--border);
+}
+.nav-item.active::before,
+.nav-item.active::after { border-color: var(--green); }
+
+.nav-ai-btn {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+  color: var(--text-1);
+  background: rgba(0, 255, 65, 0.06);
+  border: 1px solid var(--border-hi);
+  padding: 5px 16px;
+  text-decoration: none; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.nav-ai-btn::before { content: ''; position: absolute; top: -2px; left: -2px; width: 7px; height: 7px; border-top: 1px solid var(--green); border-left: 1px solid var(--green); }
+.nav-ai-btn::after  { content: ''; position: absolute; bottom: -2px; right: -2px; width: 7px; height: 7px; border-bottom: 1px solid var(--green); border-right: 1px solid var(--green); }
+.nav-ai-btn:hover { background: rgba(0, 255, 65, 0.12); border-color: var(--green); box-shadow: 0 0 12px rgba(0,255,65,0.2); }
+
+.nav-cta {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+  color: #000; background: var(--green);
+  padding: 7px 18px;
+  text-decoration: none;
+  transition: background 0.15s, box-shadow 0.15s;
+  text-transform: uppercase;
+}
+.nav-cta:hover { background: #33ff66; box-shadow: 0 0 20px rgba(0,255,65,0.5); }
+
+/* ──────────────────────────────────────────────
+   Buttons
+────────────────────────────────────────────── */
+.btn-green {
+  display: inline-block; font-family: 'Space Mono', monospace;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+  color: #000; background: var(--green);
+  padding: 12px 28px; text-decoration: none;
+  border: none; cursor: pointer; text-transform: uppercase;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.btn-green:hover { background: #33ff66; box-shadow: 0 0 28px rgba(0,255,65,0.55); transform: translateY(-1px); }
+
+.btn-outline {
+  display: inline-block; font-family: 'Space Mono', monospace;
+  font-size: 0.72rem; letter-spacing: 0.12em;
+  color: var(--text-1); background: transparent;
+  border: 1px solid var(--border-hi);
+  padding: 12px 28px; text-decoration: none;
+  cursor: pointer; text-transform: uppercase;
+  transition: border-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.btn-outline:hover { border-color: var(--green); color: var(--green); box-shadow: inset 0 0 16px rgba(0,255,65,0.06); }
+
+/* ──────────────────────────────────────────────
+   Section labels
+────────────────────────────────────────────── */
+.section-label {
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.25em;
+  color: var(--green); text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+}
+.section-label::before { content: '//'; color: var(--text-3); }
+.section-label::after  { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.section-title {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700; line-height: 1.1; color: var(--text-hi);
+  letter-spacing: -0.02em;
+}
+.section-sub {
+  font-size: 0.92rem; color: var(--text-1);
+  line-height: 1.85; max-width: 540px;
+}
+
+/* ──────────────────────────────────────────────
+   NOC panel with bracket pulse (green)
+────────────────────────────────────────────── */
+@keyframes bracket-pulse {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; filter: drop-shadow(0 0 4px rgba(0,255,65,0.6)); }
+}
+.noc-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 20px;
+  position: relative;
+}
+.noc-panel::before {
+  content:''; position:absolute; top:-1px; left:-1px;
+  width:14px; height:14px;
+  border-top:1px solid var(--green); border-left:1px solid var(--green);
+  animation: bracket-pulse 3s ease-in-out infinite;
+}
+.noc-panel::after {
+  content:''; position:absolute; bottom:-1px; right:-1px;
+  width:14px; height:14px;
+  border-bottom:1px solid var(--green); border-right:1px solid var(--green);
+  animation: bracket-pulse 3s ease-in-out infinite 1.5s;
+}
+
+/* ──────────────────────────────────────────────
+   Segmented bars (green color classes)
+────────────────────────────────────────────── */
+.seg-bar { display: flex; gap: 2px; align-items: center; }
+.seg-unit { height: 10px; flex: 1; }
+.seg-unit.on-red    { background: var(--green); opacity: 0.85; }
+.seg-unit.on-orange { background: #00c878; opacity: 0.9; }
+.seg-unit.on-amber  { background: var(--cyan); opacity: 0.85; }
+.seg-unit.off       { background: rgba(255,255,255,0.04); }
+
+/* ──────────────────────────────────────────────
+   Key-Value stat rows
+────────────────────────────────────────────── */
+.kv-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+.kv-row:last-child { border-bottom: none; }
+.kv-icon { font-size: 0.8rem; color: var(--text-2); opacity: 0.85; width: 16px; text-align: center; flex-shrink: 0; }
+.kv-label { font-size: 0.8rem; color: var(--text-1); flex: 1; letter-spacing: 0.04em; }
+.kv-value { font-size: 0.85rem; color: var(--text-hi); font-weight: 700; white-space: nowrap; letter-spacing: 0.04em; }
+.kv-value.bracket { color: var(--text-1); font-weight: 400; }
+
+/* ──────────────────────────────────────────────
+   Stats band
+────────────────────────────────────────────── */
+.stat-item {
+  padding: 30px 24px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+  transition: background 0.2s;
+}
+.stat-item:last-child { border-right: none; }
+.stat-item:hover { background: var(--green-dim); }
+.stat-num {
+  font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+  font-weight: 700; color: var(--text-hi);
+  line-height: 1; letter-spacing: -0.02em;
+}
+.stat-num .unit { font-size: 1rem; color: var(--green); }
+.stat-seg { display: flex; gap: 2px; margin-top: 14px; justify-content: center; }
+.stat-seg-unit { width: 8px; height: 3px; }
+.stat-seg-unit.on  { background: var(--green); opacity: 0.7; }
+.stat-seg-unit.off { background: rgba(255,255,255,0.05); }
+
+.area-chart { width: 100%; height: 80px; }
+
+/* ──────────────────────────────────────────────
+   Service / feature cards with green glow
+────────────────────────────────────────────── */
+.feat-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 30px;
+  position: relative;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.feat-card::before,
+.feat-card::after {
+  content: ''; position: absolute;
+  width: 10px; height: 10px;
+  border-style: solid; border-color: transparent;
+  transition: border-color 0.2s;
+}
+.feat-card::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+.feat-card::after  { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+.feat-card:hover {
+  border-color: var(--border-hi);
+  background: var(--bg-card);
+  box-shadow: 0 8px 40px rgba(0, 255, 65, 0.10);
+}
+.feat-card:hover::before,
+.feat-card:hover::after { border-color: var(--green); }
+
+.feat-icon {
+  width: 42px; height: 42px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; margin-bottom: 18px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.feat-card:hover .feat-icon { border-color: var(--green-border); background: var(--green-dim); }
+
+/* ──────────────────────────────────────────────
+   Banner card + pricing cells
+────────────────────────────────────────────── */
+.banner-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  position: relative;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.banner-card:hover {
+  border-color: var(--border-hi);
+  background: var(--bg-card);
+  box-shadow: 0 8px 40px rgba(0, 255, 65, 0.08);
+}
+.banner-card::before,
+.banner-card::after {
+  content: ''; position: absolute;
+  width: 14px; height: 14px;
+  border-style: solid; border-color: var(--green);
+}
+.banner-card::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+.banner-card::after  { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+
+.price-cell {
+  text-align: center; padding: 18px 12px;
+  position: relative;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+  cursor: pointer;
+}
+.price-cell:hover { transform: translateY(-3px); }
+.price-cell-edge  { border: 1px solid rgba(0,200,120,0.20); background: rgba(0,200,120,0.06); }
+.price-cell-edge:hover  { background: rgba(0,200,120,0.14); border-color: rgba(0,200,120,0.45); box-shadow: 0 6px 24px rgba(0,200,120,0.18); }
+.price-cell-core  { border: 1px solid rgba(0,229,255,0.20); background: rgba(0,229,255,0.06); }
+.price-cell-core:hover  { background: rgba(0,229,255,0.14); border-color: rgba(0,229,255,0.45); box-shadow: 0 6px 24px rgba(0,229,255,0.18); }
+.price-cell-titan { border: 1px solid var(--green-border); background: var(--green-dim); }
+.price-cell-titan:hover { background: rgba(0,255,65,0.16); border-color: var(--green); box-shadow: 0 6px 24px rgba(0,255,65,0.22); }
+
+/* ──────────────────────────────────────────────
+   Server table
+────────────────────────────────────────────── */
+.srv-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); }
+.srv-table thead tr { background: rgba(0,255,65,0.04); border-bottom: 1px solid var(--border-hi); }
+.srv-table th { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.18em; color: var(--text-2); text-transform: uppercase; padding: 12px 20px; text-align: left; }
+.srv-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+.srv-table tbody tr:last-child { border-bottom: none; }
+.srv-table tbody tr:hover { background: rgba(0,255,65,0.04); }
+.srv-table td { padding: 15px 20px; font-size: 0.8rem; color: var(--text-1); vertical-align: middle; }
+
+.tier-badge { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.14em; padding: 3px 7px; text-transform: uppercase; }
+.tier-edge  { background: rgba(0,200,120,0.12); color: #00c878; border: 1px solid rgba(0,200,120,0.22); }
+.tier-core  { background: rgba(0,229,255,0.12); color: #00e5ff; border: 1px solid rgba(0,229,255,0.22); }
+.tier-titan { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+
+/* PoP entries */
+.pop-dot {
+  width: 7px; height: 7px; flex-shrink: 0;
+  background: var(--cyan);
+  box-shadow: 0 0 6px var(--cyan);
+}
+
+/* Contact form */
+.form-field {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 11px 14px;
+  color: var(--text-1);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem; width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-field:focus { outline: none; border-color: var(--green); background: rgba(0,255,65,0.03); box-shadow: 0 0 0 2px rgba(0,255,65,0.08); }
+.form-field::placeholder { color: var(--text-3); }
+
+/* Marquee */
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-track { display: flex; width: max-content; animation: marquee 34s linear infinite; }
+
+/* Animations */
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.55s ease, transform 0.55s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.cursor { animation: blink 1.1s step-end infinite; color: var(--green); }
+
+@keyframes pulse { 0%, 100% { opacity: 1; box-shadow: 0 0 8px currentColor; } 50% { opacity: 0.45; box-shadow: none; } }
+.pulse { animation: pulse 2s infinite; }
+
+@keyframes count-flash { 0% { color: var(--green); } 100% { color: var(--text-hi); } }
+.stat-flash { animation: count-flash 0.4s ease; }
+
+.blob { position: absolute; border-radius: 50%; filter: blur(140px); pointer-events: none; }
+
+/* ──────────────────────────────────────────────
+   Cyberpunk flourishes
+────────────────────────────────────────────── */
+
+/* Phosphor glow on headings */
+.phosphor-glow {
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.35), 0 0 24px rgba(0, 255, 65, 0.12);
+}
+
+/* Terminal typing cursor line under section titles */
+.section-title-wrap { position: relative; display: inline-block; }
+.section-title-wrap::after {
+  content: '_';
+  color: var(--green);
+  animation: blink 1.1s step-end infinite;
+  margin-left: 2px;
+  font-size: 0.7em;
+}
+
+/* Green noise overlay for hacker feel */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9997;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  opacity: 0.025;
+}
+
+/* ──────────────────────────────────────────────
+   Service page styles
+────────────────────────────────────────────── */
+
+/* Page hero for service pages */
+.page-hero {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  padding: 136px 28px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.page-hero-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+.page-hero h1 {
+  font-size: clamp(2rem, 5vw, 3.7rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  margin-bottom: 22px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  padding: 5px 14px;
+  margin-bottom: 30px;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--text-2);
+}
+.breadcrumb a {
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.breadcrumb a:hover { color: var(--green); }
+.breadcrumb .sep { color: var(--text-3); }
+
+/* Pricing card for service pages */
+.pricing-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 36px 30px;
+  position: relative;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.pricing-card:hover {
+  border-color: var(--border-hi);
+  background: var(--bg-card);
+  box-shadow: 0 8px 40px rgba(0, 255, 65, 0.10);
+  transform: translateY(-4px);
+}
+.pricing-card::before,
+.pricing-card::after {
+  content: ''; position: absolute;
+  width: 10px; height: 10px;
+  border-style: solid; border-color: transparent;
+  transition: border-color 0.2s;
+}
+.pricing-card::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+.pricing-card::after  { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+.pricing-card:hover::before,
+.pricing-card:hover::after { border-color: var(--green); }
+.pricing-card.featured {
+  border-color: var(--green-border);
+}
+.pricing-card.featured::before,
+.pricing-card.featured::after { border-color: var(--green); }
+
+.pricing-card .price {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-hi);
+  line-height: 1;
+  margin: 16px 0;
+}
+.pricing-card .price .period {
+  font-size: 0.72rem;
+  color: var(--text-2);
+  font-weight: 400;
+}
+.pricing-card .feature-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 24px 0;
+}
+.pricing-card .feature-list li {
+  font-size: 0.8rem;
+  color: var(--text-1);
+  display: flex;
+  gap: 8px;
+  line-height: 1.5;
+}
+.pricing-card .feature-list li .check {
+  color: var(--green);
+  flex-shrink: 0;
+}
+
+/* FAQ section */
+.faq-item {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 24px 28px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.faq-item:hover {
+  border-color: var(--border-hi);
+  background: var(--bg-card);
+}
+.faq-item h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-hi);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.faq-item h4::before {
+  content: '>';
+  color: var(--green);
+  flex-shrink: 0;
+}
+.faq-item p {
+  font-size: 0.82rem;
+  color: var(--text-1);
+  line-height: 1.8;
+  padding-left: 20px;
+}
+
+/* CTA band */
+.cta-band {
+  padding: 80px 28px;
+  text-align: center;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.cta-band h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700;
+  color: var(--text-hi);
+  margin-bottom: 16px;
+}
+.cta-band p {
+  font-size: 0.9rem;
+  color: var(--text-1);
+  margin-bottom: 32px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.8;
+}
+
+/* Spec grid for service pages */
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+}
+.spec-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+.spec-item:hover { border-color: var(--border-hi); }
+.spec-item .spec-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-hi);
+  margin-bottom: 4px;
+}
+.spec-item .spec-label {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--text-2);
+  text-transform: uppercase;
+}
+
+/* Included features grid */
+.included-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.included-item {
+  display: flex;
+  gap: 12px;
+}
+.included-item .icon {
+  font-size: 1rem;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+.included-item h4 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-hi);
+  margin-bottom: 3px;
+}
+.included-item p {
+  font-size: 0.78rem;
+  color: var(--text-1);
+  line-height: 1.6;
+}
+
+/* Form toast notification */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 16px 24px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+  z-index: 10000;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+.toast.success {
+  background: rgba(0, 255, 65, 0.12);
+  border: 1px solid var(--green-border);
+  color: var(--green);
+}
+.toast.error {
+  background: rgba(255, 60, 60, 0.12);
+  border: 1px solid rgba(255, 60, 60, 0.3);
+  color: #ff6b6b;
+}
+
+/* Footer & PoP link hover (replaces inline onmouseover/onmouseout) */
+.footer-link {
+  font-size: 0.76rem;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.footer-link:hover { color: var(--text-hi); }
+.footer-link.active { color: var(--text-hi); }
+
+.pop-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.2s;
+}
+.pop-card:hover { border-color: var(--border-hi); }
+
+/* ──────────────────────────────────────────────
+   Hamburger menu
+────────────────────────────────────────────── */
+.hamburger {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--green);
+  font-size: 1.2rem;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  transition: border-color 0.15s, background 0.15s;
+}
+.hamburger:hover {
+  border-color: var(--green);
+  background: rgba(0, 255, 65, 0.06);
+}
+
+/* ──────────────────────────────────────────────
+   Responsive
+────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Nav strip hidden, nav sticks to top */
+  .nav-strip { display: none; }
+  nav { top: 0; }
+
+  /* Nav layout: logo left, hamburger + connect right */
+  .nav-inner {
+    padding: 0 16px;
+  }
+  .nav-ai-btn { order: 0; }
+  .hamburger { display: block; order: 2; }
+  .nav-cta { order: 1; }
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 56px;
+    left: 0; right: 0;
+    background: rgba(8, 14, 8, 0.98);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 12px 20px;
+    gap: 2px;
+    z-index: 300;
+  }
+  .nav-links.open { display: flex; }
+
+  /* Service page hero — smooth gradient bottom instead of sharp cutoff */
+  .page-hero {
+    padding: 80px 20px 60px;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  /* Homepage hero */
+  .hero-home { padding-top: 80px !important; padding-bottom: 40px !important; }
+
+  /* Prevent horizontal overflow on entire page */
+  body { overflow-x: hidden; }
+
+  /* Stats band — single column on mobile */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .stat-item {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 24px 20px;
+  }
+
+  /* Feature card grids */
+  .feat-card { padding: 24px; }
+
+  /* Footer */
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 28px !important;
+  }
+
+  /* Contact section */
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+    gap: 36px !important;
+  }
+
+  /* Pricing cards */
+  .pricing-card { padding: 28px 24px; }
+
+  /* Spec grid */
+  .spec-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Included grid */
+  .included-grid { grid-template-columns: 1fr; }
+
+  /* Server table — force scroll on mobile */
+  .srv-table { min-width: 750px; }
+  .table-scroll-wrap {
+    position: relative;
+  }
+  .table-scroll-wrap::before {
+    content: '← SCROLL →';
+    display: block;
+    text-align: center;
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    color: var(--text-3);
+    margin-bottom: 8px;
+  }
+}
+  </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+
+<!-- Scan-line sweep (Iter 2) -->
+<div class="scan-line"></div>
+<div class="scan-line"></div>
+
+<!-- ══ TIER 1: Announcement strip ══════════════════════════ -->
+<div class="nav-strip">
+  <div class="nav-strip-pill">
+    A unified view of your network infrastructure, performance, and operational integrity.
+  </div>
+</div>
+
+<!-- ══ TIER 2: Main nav ══════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">BIT<span>RION</span></a>
+    <div class="nav-links">
+      <a href="#" class="nav-item"><span class="nav-item-icon">⌂</span> Overview</a>
+      <a href="#services" class="nav-item"><span class="nav-item-icon">◈</span> Services</a>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="#contact" class="nav-cta">Connect</a>
+      <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════════════════ -->
+<section class="hero-home" style="min-height:100vh;display:flex;align-items:center;padding:136px 28px 64px;position:relative;overflow:hidden;">
+  <div class="blob" style="width:700px;height:700px;background:rgba(0,255,65,0.07);top:-200px;left:-250px;"></div>
+  <div class="blob" style="width:500px;height:500px;background:rgba(0,180,40,0.04);bottom:-100px;right:-150px;"></div>
+
+  <div style="max-width:1280px;margin:0 auto;width:100%;display:flex;align-items:center;gap:56px;flex-wrap:wrap;">
+
+    <div style="flex:1;min-width:300px;">
+      <div style="display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);padding:5px 14px;margin-bottom:30px;font-size:0.62rem;letter-spacing:0.18em;color:var(--text-2);">
+        <span style="width:6px;height:6px;background:var(--cyan);box-shadow:0 0 6px var(--cyan);display:inline-block;" class="pulse"></span>
+        ALL SYSTEMS OPERATIONAL<span class="cursor">_</span>
+      </div>
+
+      <h1 style="font-size:clamp(2rem,5vw,3.7rem);font-weight:700;line-height:1.08;letter-spacing:-0.03em;margin-bottom:22px;">
+        <span class="grad-green">Infrastructure</span><br />
+        Built for<br />
+        <span style="color:var(--green);">Mission-Critical</span><br />
+        Operations
+      </h1>
+
+      <p class="section-sub" style="margin-bottom:34px;">
+        Enterprise colocation with Tier1 ISP, dedicated servers, and web hosting backed by a 99.99% uptime SLA. Seven global PoPs. One network.
+      </p>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="#services" class="btn-green">Explore Services</a>
+        <a href="#contact"  class="btn-outline">Talk to Sales &rarr;</a>
+      </div>
+
+      <div style="display:flex;gap:22px;margin-top:36px;flex-wrap:wrap;">
+        <span style="font-size:0.68rem;color:var(--text-2);display:flex;align-items:center;gap:7px;letter-spacing:0.08em;"><span style="color:var(--green);">▸</span> 99.99% Uptime SLA</span>
+        <span style="font-size:0.68rem;color:var(--text-2);display:flex;align-items:center;gap:7px;letter-spacing:0.08em;"><span style="color:var(--green);">▸</span> 24/7 NOC Support</span>
+        <span style="font-size:0.68rem;color:var(--text-2);display:flex;align-items:center;gap:7px;letter-spacing:0.08em;"><span style="color:var(--green);">▸</span> 1.8 Tbps DDoS Mitigation</span>
+      </div>
+    </div>
+
+    <div style="flex:1;min-width:340px;max-width:560px;">
+      <div class="noc-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:7px;height:7px;background:var(--cyan);box-shadow:0 0 6px var(--cyan);display:inline-block;" class="pulse"></span>
+            <span style="font-size:0.62rem;letter-spacing:0.14em;color:var(--text-2);">BITRION_NOC_DASHBOARD</span>
+          </div>
+          <span style="font-size:0.58rem;color:var(--text-3);letter-spacing:0.1em;">[ LIVE ]</span>
+          <span id="noc-time" style="font-size:0.58rem;color:var(--text-3);"></span>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div class="kv-row">
+            <span class="kv-icon">≡</span>
+            <span class="kv-label">Network Uptime</span>
+            <span class="kv-value" style="color:var(--cyan);">99.99%</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-icon">⊡</span>
+            <span class="kv-label">Aggregate Capacity</span>
+            <span class="kv-value">40 Gbps</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-icon">◈</span>
+            <span class="kv-label">BGP Prefixes</span>
+            <span class="kv-value">850K full-table</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-icon">⊙</span>
+            <span class="kv-label">Active Clients</span>
+            <span class="kv-value">200+</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-icon">◷</span>
+            <span class="kv-label">Last Incident</span>
+            <span class="kv-value bracket">[NONE / 30D]</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-icon">↻</span>
+            <span class="kv-label">Last Health Scan</span>
+            <span class="kv-value bracket">[2026/05/28]</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div class="label" style="margin-bottom:10px;color:var(--text-3);">// Traffic Activity</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                <span style="font-size:0.68rem;color:var(--text-2);">Colocation</span>
+                <span id="bar-val-1" style="font-size:0.68rem;color:var(--text-2);">72%</span>
+              </div>
+              <div class="seg-bar" id="seg-1"></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                <span style="font-size:0.68rem;color:var(--text-2);">Dedicated Servers</span>
+                <span id="bar-val-2" style="font-size:0.68rem;color:var(--text-2);">58%</span>
+              </div>
+              <div class="seg-bar" id="seg-2"></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                <span style="font-size:0.68rem;color:var(--text-2);">Web Hosting</span>
+                <span id="bar-val-3" style="font-size:0.68rem;color:var(--text-2);">41%</span>
+              </div>
+              <div class="seg-bar" id="seg-3"></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div class="label" style="color:var(--text-3);">// Global PoP Status</div>
+            <span style="font-size:0.6rem;color:var(--cyan);letter-spacing:0.1em;">7/7 ONLINE</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;">
+            <div style="border:1px solid rgba(0,229,255,0.15);padding:6px;text-align:center;background:rgba(0,229,255,0.04);">
+              <div style="font-size:0.62rem;color:var(--cyan);letter-spacing:0.08em;">ASH</div>
+              <div style="font-size:0.52rem;color:var(--text-3);margin-top:2px;">0.4ms</div>
+            </div>
+            <div style="border:1px solid rgba(0,229,255,0.15);padding:6px;text-align:center;background:rgba(0,229,255,0.04);">
+              <div style="font-size:0.62rem;color:var(--cyan);letter-spacing:0.08em;">LON</div>
+              <div style="font-size:0.52rem;color:var(--text-3);margin-top:2px;">6.1ms</div>
+            </div>
+            <div style="border:1px solid rgba(0,229,255,0.15);padding:6px;text-align:center;background:rgba(0,229,255,0.04);">
+              <div style="font-size:0.62rem;color:var(--cyan);letter-spacing:0.08em;">AMS</div>
+              <div style="font-size:0.52rem;color:var(--text-3);margin-top:2px;">4.8ms</div>
+            </div>
+            <div style="border:1px solid rgba(0,229,255,0.15);padding:6px;text-align:center;background:rgba(0,229,255,0.04);">
+              <div style="font-size:0.62rem;color:var(--cyan);letter-spacing:0.08em;">SIN</div>
+              <div style="font-size:0.52rem;color:var(--text-3);margin-top:2px;">18.7ms</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ MARQUEE ═══════════════════════════════════════════════ -->
+<div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:16px 0;overflow:hidden;background:rgba(0,255,65,0.015);">
+  <div style="font-size:0.58rem;letter-spacing:0.22em;color:var(--text-3);text-align:center;margin-bottom:14px;">// TRUSTED BY ENTERPRISES WORLDWIDE</div>
+  <div style="overflow:hidden;">
+    <div class="marquee-track">
+      <div style="display:flex;gap:60px;align-items:center;padding-right:60px;">
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">ACCENTURE</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">CLOUDFLARE</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">EQUINIX</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">ZSCALER</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">PALO ALTO</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">FASTLY</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">AKAMAI</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">JUNIPER</span>
+      </div>
+      <div style="display:flex;gap:60px;align-items:center;padding-right:60px;">
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">ACCENTURE</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">CLOUDFLARE</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">EQUINIX</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">ZSCALER</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">PALO ALTO</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">FASTLY</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">AKAMAI</span>
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-3);letter-spacing:0.14em;white-space:nowrap;">JUNIPER</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SERVICES ══════════════════════════════════════════════ -->
+<section id="services" style="padding:100px 28px;position:relative;overflow:hidden;">
+  <div class="blob" style="width:600px;height:600px;background:rgba(0,255,65,0.04);bottom:-150px;right:-150px;"></div>
+  <div style="max-width:1280px;margin:0 auto;">
+    <div class="reveal" style="margin-bottom:56px;">
+      <div class="section-label">Services</div>
+      <h2 class="section-title phosphor-glow" style="margin-bottom:12px;">Enterprise-Grade<br /><span class="grad-green">Network Solutions</span></h2>
+      <p class="section-sub">From carrier-neutral colocation to managed web hosting and bare-metal servers — every service engineered for maximum availability.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1px;background:var(--border);">
+      <!-- ITER 4: per-service cyberpunk accent colors -->
+      <div class="feat-card reveal">
+        <div class="feat-icon">🏢</div>
+        <div class="label" style="margin-bottom:8px;color:var(--green);">01 / Colocation</div>
+        <h3 style="font-size:0.95rem;font-weight:700;color:var(--text-hi);margin-bottom:10px;">Carrier-Neutral Colo</h3>
+        <p style="font-size:0.85rem;color:var(--text-1);line-height:1.8;margin-bottom:18px;">N+1 redundant data center space with guaranteed power, cooling, and biometric physical security. Cross-connect available.</p>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:20px;">
+          <li style="font-size:0.8rem;color:var(--text-1);display:flex;gap:7px;"><span style="color:var(--green);">›</span> Redundant power feeds</li>
+          <li style="font-size:0.8rem;color:var(--text-1);display:flex;gap:7px;"><span style="color:var(--green);">›</span> 24/7 physical security</li>
+          <li style="font-size:0.8rem;color:var(--text-1);display:flex;gap:7px;"><span style="color:var(--green);">›</span> Cross-connect available</li>
+        </ul>
+        <a href="#contact" data-service="Colocation" style="font-size:0.76rem;color:var(--green);text-decoration:none;letter-spacing:0.14em;">LEARN MORE &rarr;</a>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">🌐</div>
+        <div class="label" style="margin-bottom:8px;color:#00e5ff;">02 / Web Hosting</div>
+        <h3 style="font-size:0.95rem;font-weight:700;color:var(--text-hi);margin-bottom:10px;">Managed Hosting</h3>
+        <p style="font-size:0.85rem;color:var(--text-1);line-height:1.8;margin-bottom:18px;">High-performance managed hosting with enterprise NVMe storage, daily backups, and automated SSL certificate management.</p>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:20px;">
+          <li style="font-size:0.8rem;color:var(--text-1);display:flex;gap:7px;"><span style="color:#00e5ff;">›</span> NVMe SSD storage</li>
+          <li style="font-size:0.8rem;color:var(--text-1);display:flex;gap:7px;"><span style="color:#00e5ff;">›</span> Free SSL &amp; daily backups</li>
+          <li style="font-size:0.8rem;color:var(--text-1);display:flex;gap:7px;"><span style="color:#00e5ff;">›</span> cPanel / Plesk managed</li>
+        </ul>
+        <a href="#contact" data-service="Web Hosting" style="font-size:0.76rem;color:#00e5ff;text-decoration:none;letter-spacing:0.14em;">LEARN MORE &rarr;</a>
+      </div>
+    </div>
+
+    <div class="reveal banner-card" style="margin-top:1px;padding:34px 36px;display:flex;align-items:center;gap:44px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:260px;">
+        <div class="label" style="color:var(--green);margin-bottom:10px;">03 / Dedicated Servers</div>
+        <h3 style="font-size:1.25rem;font-weight:700;color:var(--text-hi);margin-bottom:10px;">Bare-Metal Performance</h3>
+        <p style="font-size:0.88rem;color:var(--text-1);line-height:1.8;max-width:500px;margin-bottom:20px;">No virtualization overhead. EDGE, CORE, and TITAN tiers from single-socket workloads to dual-socket high-core NVMe deployments.</p>
+        <a href="#contact" data-service="Dedicated Servers" class="btn-green" style="font-size:0.72rem;">View Configurations</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-width:280px;flex:1;">
+        <div class="price-cell price-cell-edge">
+          <div class="label" style="font-size:0.6rem;margin-bottom:8px;color:#00c878;">Edge Tier</div>
+          <div style="font-size:1.5rem;font-weight:700;color:var(--text-hi);">$59<span style="font-size:0.68rem;color:var(--text-2);">/mo</span></div>
+          <div style="font-size:0.7rem;color:var(--text-2);margin-top:5px;">Xeon E-22xx</div>
+        </div>
+        <div class="price-cell price-cell-core">
+          <div class="label" style="font-size:0.6rem;margin-bottom:8px;color:#00e5ff;">Core Tier</div>
+          <div style="font-size:1.5rem;font-weight:700;color:var(--text-hi);">$129<span style="font-size:0.68rem;color:var(--text-2);">/mo</span></div>
+          <div style="font-size:0.7rem;color:var(--text-2);margin-top:5px;">EPYC 7302P+</div>
+        </div>
+        <div class="price-cell price-cell-titan">
+          <div class="label" style="font-size:0.6rem;margin-bottom:8px;color:var(--green);">Titan Tier</div>
+          <div style="font-size:1.5rem;font-weight:700;color:var(--text-hi);">$249<span style="font-size:0.68rem;color:var(--text-2);">/mo</span></div>
+          <div style="font-size:0.7rem;color:var(--text-2);margin-top:5px;">EPYC 7543P+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHY BITRION ════════════════════════════════════════════ -->
+<section style="padding:100px 28px;position:relative;overflow:hidden;">
+  <div class="blob" style="width:600px;height:600px;background:rgba(0,255,65,0.04);bottom:-200px;right:-200px;"></div>
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="reveal" style="margin-bottom:56px;">
+      <div class="section-label">Why Bitrion</div>
+      <h2 class="section-title phosphor-glow" style="margin-bottom:12px;">Infrastructure You<br /><span class="grad-green">Can Trust</span></h2>
+      <p class="section-sub">We don't just sell bandwidth. We build long-term infrastructure partnerships with companies who can't afford downtime.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--border);">
+      <div class="feat-card reveal" style="padding:26px;">
+        <div class="feat-icon">⚙️</div>
+        <h3 style="font-size:0.9rem;font-weight:700;color:var(--text-hi);margin-bottom:8px;">Owned Infrastructure</h3>
+        <p style="font-size:0.84rem;color:var(--text-1);line-height:1.8;">We own and operate our network — no reseller overhead. Direct control over every router, switch, and fiber run.</p>
+      </div>
+      <div class="feat-card reveal" style="padding:26px;">
+        <div class="feat-icon">🔒</div>
+        <h3 style="font-size:0.9rem;font-weight:700;color:var(--text-hi);margin-bottom:8px;">Security-First Design</h3>
+        <p style="font-size:0.84rem;color:var(--text-1);line-height:1.8;">RPKI, BGP path filtering, automated DDoS mitigation, and SOC2-aligned operational procedures protect every customer by default.</p>
+      </div>
+      <div class="feat-card reveal" style="padding:26px;">
+        <div class="feat-icon">📞</div>
+        <h3 style="font-size:0.9rem;font-weight:700;color:var(--text-hi);margin-bottom:8px;">Dedicated NOC Team</h3>
+        <p style="font-size:0.84rem;color:var(--text-1);line-height:1.8;">Engineers — not a ticket queue — respond to incidents. &lt;4 min average response time, 24/7/365, with direct escalation.</p>
+      </div>
+      <div class="feat-card reveal" style="padding:26px;">
+        <div class="feat-icon">📈</div>
+        <h3 style="font-size:0.9rem;font-weight:700;color:var(--text-hi);margin-bottom:8px;">Scales With You</h3>
+        <p style="font-size:0.84rem;color:var(--text-1);line-height:1.8;">Start with a single server or a /24. Scale to multi-rack colocation and dedicated server clusters. One partner for your entire growth.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ═══════════════════════════════════════════════ -->
+<section id="contact" style="padding:100px 28px;background:var(--bg-panel);border-top:1px solid var(--border);">
+  <div style="max-width:1000px;margin:0 auto;">
+    <div class="reveal" style="margin-bottom:56px;">
+      <div class="section-label">Get in Touch</div>
+      <h2 class="section-title phosphor-glow" style="margin-bottom:12px;">Ready to Build<br /><span class="grad-green">Something Reliable?</span></h2>
+      <p class="section-sub">Speak with a network engineer. No sales scripts — direct technical answers.</p>
+    </div>
+    <div class="contact-grid reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;flex-wrap:wrap;">
+      <div>
+        <div style="display:flex;flex-direction:column;gap:20px;margin-bottom:32px;">
+          <div style="display:flex;align-items:flex-start;gap:14px;">
+            <div style="width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">📧</div>
+            <div><div class="label" style="margin-bottom:4px;font-size:0.55rem;">Email</div><a href="mailto:info@bitrion.qa" style="color:var(--green);text-decoration:none;font-size:0.82rem;">info@bitrion.qa</a></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px;">
+            <div style="width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">📞</div>
+            <div><div class="label" style="margin-bottom:4px;font-size:0.55rem;">Phone</div><a href="tel:+18884777928" style="color:var(--green);text-decoration:none;font-size:0.82rem;">+1 (888) 477-7928</a></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px;">
+            <div style="width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">📍</div>
+            <div><div class="label" style="margin-bottom:4px;font-size:0.55rem;">Headquarters</div><div style="color:var(--text-2);font-size:0.8rem;line-height:1.7;">45 Network Exchange Dr<br />Suite 800, Ashburn, VA 20147</div></div>
+          </div>
+        </div>
+        <div style="background:rgba(0,255,65,0.04);border:1px solid var(--border-hi);padding:16px 20px;position:relative;">
+          <div style="position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:1px solid var(--green);border-left:1px solid var(--green);"></div>
+          <div class="label" style="color:var(--green);margin-bottom:8px;font-size:0.55rem;">// NOC Status</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="width:7px;height:7px;background:var(--cyan);box-shadow:0 0 6px var(--cyan);display:inline-block;" class="pulse"></span>
+            <span style="font-size:0.82rem;color:var(--text-hi);font-weight:700;">All systems operational</span>
+          </div>
+          <div style="font-size:0.65rem;color:var(--text-3);margin-top:5px;letter-spacing:0.08em;">7/7 POPS ONLINE · 0 ACTIVE INCIDENTS</div>
+        </div>
+      </div>
+      <div>
+        <form id="contact-form" style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div><div class="label" style="margin-bottom:5px;font-size:0.55rem;">First Name</div><input type="text" name="first_name" placeholder="Jane" class="form-field" required /></div>
+            <div><div class="label" style="margin-bottom:5px;font-size:0.55rem;">Last Name</div><input type="text" name="last_name" placeholder="Smith" class="form-field" required /></div>
+          </div>
+          <div><div class="label" style="margin-bottom:5px;font-size:0.55rem;">Work Email</div><input type="email" name="email" placeholder="jane@company.com" class="form-field" required /></div>
+          <div>
+            <div class="label" style="margin-bottom:5px;font-size:0.55rem;">Service Interest</div>
+            <select name="service" class="form-field" style="cursor:pointer;appearance:none;" required>
+              <option value="" disabled selected>// Select a service...</option>
+              <option>Colocation</option><option>Web Hosting</option>
+              <option>Dedicated Servers</option><option>Custom / Enterprise</option>
+            </select>
+          </div>
+          <div><div class="label" style="margin-bottom:5px;font-size:0.55rem;">Message</div><textarea name="message" class="form-field" rows="4" placeholder="// Describe your requirements..." required></textarea></div>
+          <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true"><label>Company website <input type="text" name="company_website" tabindex="-1" autocomplete="off" /></label></div>
+          <div class="cf-turnstile" data-sitekey="REPLACE_WITH_TURNSTILE_SITE_KEY" data-theme="dark" data-action="contact" data-size="flexible"></div>
+          <button type="submit" id="contact-btn" class="btn-green" style="width:100%;text-align:center;padding:13px;font-size:0.72rem;">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ════════════════════════════════════════════════ -->
+<footer style="background:var(--bg);border-top:1px solid var(--border);padding:44px 28px 26px;">
+  <div style="max-width:1280px;margin:0 auto;">
+    <div class="footer-grid" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;margin-bottom:36px;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:1.05rem;font-weight:700;color:var(--text-hi);letter-spacing:0.05em;margin-bottom:12px;">BIT<span style="color:var(--green);">RION</span></div>
+        <p style="font-size:0.76rem;color:var(--text-2);line-height:1.8;max-width:280px;">Enterprise network infrastructure provider serving mission-critical operations since 2018.</p>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:12px;font-size:0.55rem;">Services</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="#services" class="footer-link">Colocation</a>
+          <a href="#services" class="footer-link">Web Hosting</a>
+          <a href="#services" class="footer-link">Dedicated Servers</a>
+        </div>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:12px;font-size:0.55rem;">Company</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="#" class="footer-link">About</a>
+          <a href="#contact" class="footer-link">Contact</a>
+          <a href="#" class="footer-link">SLA Policy</a>
+        </div>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:12px;font-size:0.55rem;">Support</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="mailto:info@bitrion.qa" class="footer-link">Open a Ticket</a>
+          <a href="tel:+18884777928" class="footer-link">+1 (888) 477-7928</a>
+          <a href="#" class="footer-link">Status Page</a>
+          <a href="#" class="footer-link">NOC Portal</a>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+      <div style="font-size:0.65rem;color:var(--text-3);letter-spacing:0.08em;">// &copy; 2026 BITRION. ALL RIGHTS RESERVED.</div>
+      <div style="display:flex;gap:18px;">
+        <a href="#" style="font-size:0.65rem;color:var(--text-3);text-decoration:none;letter-spacing:0.08em;">PRIVACY</a>
+        <a href="#" style="font-size:0.65rem;color:var(--text-3);text-decoration:none;letter-spacing:0.08em;">TERMS</a>
+        <a href="#" style="font-size:0.65rem;color:var(--text-3);text-decoration:none;letter-spacing:0.08em;">AUP</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── Segmented bars ────────────────────────────────────────
+  function buildSegBar(el, total, fill, color) {
+    el.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+      const u = document.createElement('div');
+      u.className = 'seg-unit ' + (i < fill ? 'on-' + color : 'off');
+      el.appendChild(u);
+    }
+  }
+
+  buildSegBar(document.getElementById('seg-1'), 18, 13, 'red');
+  buildSegBar(document.getElementById('seg-2'), 18, 10, 'red');
+  buildSegBar(document.getElementById('seg-3'), 18, 7, 'red');
+
+  function buildStatSeg(id, total, filledCount) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+      const u = document.createElement('div');
+      u.className = 'stat-seg-unit ' + (i < filledCount ? 'on' : 'off');
+      el.appendChild(u);
+    }
+  }
+
+  // ── NOC clock ─────────────────────────────────────────────
+  function updateClock() {
+    const el = document.getElementById('noc-time');
+    if (el) el.textContent = new Date().toUTCString().slice(5, 25).toUpperCase() + ' UTC';
+  }
+  updateClock(); setInterval(updateClock, 1000);
+
+  // ── Live traffic seg bars ─────────────────────────────────
+  const barVals = [72, 58, 41];
+  setInterval(() => {
+    barVals.forEach((v, i) => {
+      barVals[i] = Math.max(15, Math.min(95, v + (Math.random() - 0.5) * 7));
+      const fill = Math.round(barVals[i] / 100 * 18);
+      const segEl = document.getElementById('seg-' + (i + 1));
+      const valEl = document.getElementById('bar-val-' + (i + 1));
+      if (segEl) buildSegBar(segEl, 18, fill, 'red');
+      if (valEl) valEl.textContent = Math.round(barVals[i]) + '%';
+    });
+  }, 2500);
+
+  // ── Scroll reveal ─────────────────────────────────────────
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  // ── Count-up animation (Iter 5: flash on complete) ────────
+  function countUp(el, target, decimals, duration, onComplete) {
+    if (!el) return;
+    const start = performance.now();
+    function step(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const ease = 1 - Math.pow(1 - t, 3);
+      el.textContent = (target * ease).toFixed(decimals);
+      if (t < 1) requestAnimationFrame(step);
+      else {
+        el.textContent = target.toFixed(decimals);
+        el.classList.add('stat-flash');
+        setTimeout(() => el.classList.remove('stat-flash'), 400);
+        if (onComplete) onComplete();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ── Stats band observer ───────────────────────────────────
+  const statsObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        statsObs.unobserve(e.target);
+        e.target.querySelectorAll('.stat-seg-unit').forEach(u => {});
+        countUp(document.getElementById('st-uptime'), 99.99, 2, 1600, () => buildStatSeg('ss-uptime', 20, 20));
+        countUp(document.getElementById('st-pops'),   7,     0,  900, () => buildStatSeg('ss-pops',   10, 7));
+        countUp(document.getElementById('st-clients'), 200,  0, 1200, () => buildStatSeg('ss-clients', 16, 12));
+        countUp(document.getElementById('st-ddos'),   1.8,   1, 1100, () => buildStatSeg('ss-ddos',   18, 14));
+      }
+    });
+  }, { threshold: 0.4 });
+  const band = document.getElementById('stats-band');
+  if (band) statsObs.observe(band);
+
+  // ── Contact form AJAX submission ────────────────────────────
+  const contactForm = document.getElementById('contact-form');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('contact-btn');
+      const origText = btn.textContent;
+      btn.textContent = 'SENDING...';
+      btn.disabled = true;
+
+      fetch('/api/contact', {
+        method: 'POST',
+        body: new FormData(contactForm)
+      })
+      .then(r => r.json())
+      .then(data => {
+        showToast(data.success ? 'Message sent successfully.' : (data.error || 'Failed to send.'), data.success ? 'success' : 'error');
+        if (data.success) contactForm.reset();
+      })
+      .catch(() => showToast('Network error. Please try again.', 'error'))
+      .finally(() => { btn.textContent = origText; btn.disabled = false; if (window.turnstile) turnstile.reset(); });
+    });
+  }
+
+  // ── Service cards → pre-select the service in the contact form ──
+  document.querySelectorAll('a[data-service]').forEach(a => {
+    a.addEventListener('click', () => {
+      const sel = document.querySelector('#contact-form select[name="service"]');
+      if (sel) sel.value = a.dataset.service;
+    });
+  });
+
+  function showToast(msg, type) {
+    let t = document.getElementById('toast');
+    if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; document.body.appendChild(t); }
+    t.textContent = msg;
+    t.className = 'toast ' + type;
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => t.classList.remove('show'), 4000);
+  }
+</script>
+</body>
+</html>

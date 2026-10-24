@@ -1,0 +1,23 @@
+{
+  // Cloudflare Worker for bitrion.qa: serves public/ and handles POST /api/contact.
+  // Secrets are NOT in this file. Set them in the dashboard:
+  //   Worker → Settings → Variables and Secrets → Add → type "Secret":
+  //   SMTP_USER, SMTP_PASS, TURNSTILE_SECRET
+  "name": "bitrion-qa",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "observability": { "enabled": true },
+  "vars": {
+    "SITE_NAME": "bitrion.qa",
+    "MAIL_TO": "info@bitrion.qa",
+    "MAIL_FROM": "",
+    "SMTP_HOST": "fox.ipswat.com",
+    "SMTP_PORT": "465",
+    "SMTP_SECURE": "tls"
+  }
+}
